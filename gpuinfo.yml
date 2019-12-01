@@ -1,0 +1,13 @@
+- hosts: all
+  tasks:
+    - name: Get GPU name
+      command: nvidia-smi -L
+      register: gpu_name
+    - name: Show GPU name
+      debug: var=gpu_name.stdout_lines
+
+    - name: Get GPU available drivers
+      command: ubuntu-drivers devices
+      register: available_drivers
+    - name: Show GPU available drivers
+      debug: var=available_drivers.stdout_lines

@@ -1,0 +1,105 @@
+- hosts: all
+  tasks:
+  # Common
+    - name: Install common packages
+      apt:
+        name:
+          - apt-file
+        state: latest
+  # Docker
+    - name: Add apt key for Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+    - name: Update repository to refrect Docker repository
+      apt:
+        update_cache: yes
+        state: latest
+    - name: Install Cuda 10.1
+      apt:
+        name:
+          - docker-ce
+          - docker-compose
+        state: latest
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    # GPU
+    - name: Install common packages
+      apt:
+        name:
+          - ubuntu-drivers-common
+        state: latest
+    # - name: Install GPU Driver
+    #   apt:
+    #     name:
+    #       - nvidia-driver-435
+    #     state: latest
+
+    # Install Cuda
+    # https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1804&target_type=debnetwork
+    - name: Download Cuda pin
+      get_url:
+        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+        dest: /etc/apt/preferences.d/cuda-repository-pin-600
+    - name: Add apt key for Cuda
+      apt_key:
+        url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+        state: present
+    - name: Add Cuda repository
+      apt_repository:
+        repo: deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
+        state: present
+    - name: Update repository to refrect Cuda repository
+      apt:
+        update_cache: yes
+        state: latest
+    - name: Install Cuda 10.1
+      apt:
+        name:
+          - cuda-10-1
+        state: latest
+    - name: Add cuda path
+      lineinfile:
+        dest: /home/{{ ansible_user }}/.bashrc
+        line: "export PATH=/usr/local/cuda-10.1/bin:$PATH"
+
+    # Nvidia Container Toolkit
+    # https://github.com/NVIDIA/nvidia-docker
+    - name: Add apt key for Nvidia Docker repository
+      apt_key:
+        url: https://nvidia.github.io/nvidia-docker/gpgkey
+        state: present
+    - name: Add Nvidia Docker epository
+      apt_repository:
+        repo: deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
+        state: present
+    - name: Get source list for Nvidia Docker
+      get_url:
+        url: https://nvidia.github.io/nvidia-docker/ubuntu18.04/nvidia-docker.list
+        dest: /etc/apt/sources.list.d/nvidia-docker.list
+    - name: Update repository to refrect Nvidia Docker repository
+      apt:
+        update_cache: yes
+        state: latest
+    - name: Install nvidia-container-toolkit 
+      apt:
+        name:
+          - nvidia-container-toolkit
+        state: latest
+    - name: Restart Docker
+      systemd:
+        state: restarted
+        name: docker
