@@ -3,6 +3,7 @@
 ## Requrements
 
 - Install [Ubuntu Server 18.0.4.3 LTS](https://ubuntu.com/download/server) to your server.
+- Server IP address is assumed to `192.168.0.3`
 - RTX 2080 Ti is required
 - Install Ansible to the server
   ```sh

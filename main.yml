@@ -5,6 +5,7 @@
       apt:
         name:
           - apt-file
+          - jq
         state: latest
   # Docker
     - name: Add apt key for Docker
@@ -19,7 +20,7 @@
       apt:
         update_cache: yes
         state: latest
-    - name: Install Cuda 10.1
+    - name: Install Docker
       apt:
         name:
           - docker-ce
@@ -66,15 +67,21 @@
       apt:
         update_cache: yes
         state: latest
-    - name: Install Cuda 10.1
+    - name: Install the latest Cuda
+      # This task installs the latest cuda. If you update cuda, remove the old one before running the task.
+      # For example, if you update the cuda from cuda-10-1 to cuda-11-2, plese remove cuda-10-1 first as follows
+      #
+      #   $ apt autoremove cuda-11-2
+      #
+      # After finish installation, please reboot your machine to reflect the update.
       apt:
         name:
-          - cuda-10-1
+          - cuda-11-2
         state: latest
     - name: Add cuda path
       lineinfile:
         dest: /home/{{ ansible_user }}/.bashrc
-        line: "export PATH=/usr/local/cuda-10.1/bin:$PATH"
+        line: "export PATH=/usr/local/cuda/bin:$PATH"
 
     # Nvidia Container Toolkit
     # https://github.com/NVIDIA/nvidia-docker
