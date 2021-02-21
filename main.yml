@@ -71,7 +71,7 @@
       # This task installs the latest cuda. If you update cuda, remove the old one before running the task.
       # For example, if you update the cuda from cuda-10-1 to cuda-11-2, plese remove cuda-10-1 first as follows
       #
-      #   $ apt autoremove cuda-11-2
+      #   $ apt autoremove cuda-10-1
       #
       # After finish installation, please reboot your machine to reflect the update.
       apt:
