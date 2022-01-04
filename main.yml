@@ -76,7 +76,7 @@
       # After finish installation, please reboot your machine to reflect the update.
       apt:
         name:
-          - cuda-11-2
+          - cuda-11-3
         state: latest
     - name: Add cuda path
       lineinfile:
